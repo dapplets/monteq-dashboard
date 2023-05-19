@@ -141,9 +141,11 @@ function App() {
                     <TableCell>{acc.karma.toString()}</TableCell>
                     <TableCell>{acc.box.toString()}</TableCell>
                     <TableCell>
-                      {new Date(
-                        acc.lockedAt.toNumber() * 1000
-                      ).toLocaleString()}
+                      {acc.lockedAt.eq(0)
+                        ? "—"
+                        : new Date(
+                            acc.lockedAt.toNumber() * 1000
+                          ).toLocaleString()}
                     </TableCell>
                     <TableCell>{acc.ambassadorRank}</TableCell>
                   </TableRow>
