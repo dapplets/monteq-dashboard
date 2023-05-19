@@ -16,6 +16,10 @@ import * as ethers from 'ethers'
 import { CHAIN_ID, CONTRACT_ADDRESS, JSON_RPC_URL } from './constants'
 import ABI from './EdconGame.json'
 import { useParams } from 'react-router-dom'
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en.json'
+
+TimeAgo.addDefaultLocale(en)
 
 const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_URL, CHAIN_ID)
 const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider)
@@ -67,8 +71,11 @@ const App = () => {
                 // ToDo: paginate
                 const users = await contract.getAccounts(selectedTokenId, 0, 1000, true)
 
-                // sort by karma desc
-                setAccounts([...users.out].sort((a, b) => b.karma.sub(a.karma).toNumber()))
+                setAccounts(
+                    [...users.out]
+                        .filter((x) => x.ambassadorRank === 0) // ambassadors are not participated
+                        .sort((a, b) => b.karma.sub(a.karma).toNumber()) // sort by karma desc
+                )
             } catch (err) {
                 console.log(err)
             } finally {

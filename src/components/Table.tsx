@@ -7,6 +7,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import LinearProgress from '@mui/material/LinearProgress'
+import ReactTimeAgo from 'react-time-ago'
 
 const ResultsTable = ({
     accounts,
@@ -25,8 +26,7 @@ const ResultsTable = ({
                         <TableCell>Account</TableCell>
                         <TableCell>Karma</TableCell>
                         <TableCell>Balance</TableCell>
-                        <TableCell>Locked At</TableCell>
-                        <TableCell>Ambassador Rank</TableCell>
+                        <TableCell>Last received</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -42,11 +42,15 @@ const ResultsTable = ({
                             <TableCell>{acc.karma.toString()}</TableCell>
                             <TableCell>{acc.box.toString()}</TableCell>
                             <TableCell>
-                                {acc.lockedAt.eq(0)
-                                    ? '—'
-                                    : new Date(acc.lockedAt.toNumber() * 1000).toLocaleString()}
+                                {acc.lockedAt.eq(0) ? (
+                                    '—'
+                                ) : (
+                                    <ReactTimeAgo
+                                        date={new Date(acc.lockedAt.toNumber() * 1000)}
+                                        locale="en-US"
+                                    />
+                                )}
                             </TableCell>
-                            <TableCell>{acc.ambassadorRank}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
