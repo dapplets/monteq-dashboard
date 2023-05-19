@@ -3,7 +3,7 @@ import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import Container from '@mui/material/Container'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
@@ -38,11 +38,13 @@ const App = () => {
         setSelectedTokenId(newValue)
     }
 
+    const tokensPromise = useMemo(async () => contract.readToken(), [])
+
     useEffect(() => {
         ;(async () => {
             try {
                 setAreTokensLoading(true)
-                const tokens = await contract.readToken()
+                const tokens = await tokensPromise
                 let newSelectedTokenId = -1
                 for (let i = 0; i < tokens.length; i++) {
                     if (id?.toLowerCase() === tokens[i].ticker.toLowerCase()) {
@@ -51,7 +53,7 @@ const App = () => {
                 }
                 if (newSelectedTokenId === -1) {
                     navigate('/')
-                    newSelectedTokenId = selectedTokenId
+                    newSelectedTokenId = 0
                 }
                 setTokenInfos(tokens)
                 setSelectedTokenId(newSelectedTokenId)
@@ -61,7 +63,7 @@ const App = () => {
                 setAreTokensLoading(false)
             }
         })()
-    }, [])
+    }, [id, navigate, tokensPromise])
 
     useEffect(() => {
         ;(async () => {
