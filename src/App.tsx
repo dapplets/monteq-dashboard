@@ -21,6 +21,12 @@ import { CircularProgress, CssBaseline } from "@mui/material";
 import * as ethers from "ethers";
 import { CHAIN_ID, CONTRACT_ADDRESS, JSON_RPC_URL } from "./constants";
 import ABI from "./EdconGame.json";
+import TimeAgo from "javascript-time-ago";
+
+import en from "javascript-time-ago/locale/en.json";
+import ReactTimeAgo from "react-time-ago";
+
+TimeAgo.addDefaultLocale(en);
 
 const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_URL, CHAIN_ID);
 const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
@@ -64,9 +70,10 @@ function App() {
           true
         );
 
-        // sort by karma desc
         setAccounts(
-          [...users.out].sort((a, b) => b.karma.sub(a.karma).toNumber())
+          [...users.out]
+            .filter((x) => x.ambassadorRank === 0) // ambassadors are not participated
+            .sort((a, b) => b.karma.sub(a.karma).toNumber()) // sort by karma desc
         );
       } catch (err) {
         console.log(err);
@@ -124,8 +131,7 @@ function App() {
                   <TableCell>Account</TableCell>
                   <TableCell>Karma</TableCell>
                   <TableCell>Balance</TableCell>
-                  <TableCell>Locked At</TableCell>
-                  <TableCell>Ambassador Rank</TableCell>
+                  <TableCell>Last received</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -141,13 +147,15 @@ function App() {
                     <TableCell>{acc.karma.toString()}</TableCell>
                     <TableCell>{acc.box.toString()}</TableCell>
                     <TableCell>
-                      {acc.lockedAt.eq(0)
-                        ? "—"
-                        : new Date(
-                            acc.lockedAt.toNumber() * 1000
-                          ).toLocaleString()}
+                      {acc.lockedAt.eq(0) ? (
+                        "—"
+                      ) : (
+                        <ReactTimeAgo
+                          date={new Date(acc.lockedAt.toNumber() * 1000)}
+                          locale="en-US"
+                        />
+                      )}
                     </TableCell>
-                    <TableCell>{acc.ambassadorRank}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
